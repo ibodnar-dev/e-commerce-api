@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings
 
 
 class SettingsBase(BaseSettings):
-    project_root: Path = Field(default=Path(__file__).resolve().parents[1])
+    project_root: Path = Field(default=Path(__file__).resolve().parents[2])
     app_db_name: str = "app"
 
     @property
