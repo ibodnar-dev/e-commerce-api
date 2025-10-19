@@ -1,0 +1,1 @@
+from app.domain.ports.repositories.product_repository import ProductRepository
