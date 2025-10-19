@@ -3,7 +3,6 @@ from decimal import Decimal
 from enum import Enum
 from uuid import UUID, uuid4
 
-from sqlalchemy import Column, Text
 from sqlmodel import Field, Relationship, SQLModel
 
 
