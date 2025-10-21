@@ -14,16 +14,10 @@ class SQLProductRepository(ProductRepository):
         self.session = session
 
     async def find_by_id(self, product_id: str) -> Product | None:
-        """
-        Find a product by its ID.
-        """
         product_uuid = UUID(product_id)
         return self.session.get(Product, product_uuid)
 
     async def save(self, product: Product) -> None:
-        """
-        Save (create or update) a product.
-        """
         product.updated_at = datetime.now(timezone.utc)
         self.session.add(product)
         self.session.flush()
