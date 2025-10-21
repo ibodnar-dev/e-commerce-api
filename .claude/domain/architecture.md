@@ -70,7 +70,7 @@ Domain/Ports (interfaces) ←── Infrastructure/Adapters (implementations)
 ### Example
 
 ```python
-# domain/ports/repositories/product_repository.py
+# domain/ports/repositories/product.py
 from abc import ABC, abstractmethod
 from domain.models.product import Product
 
