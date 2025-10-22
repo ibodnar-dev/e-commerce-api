@@ -11,6 +11,9 @@
 - Unit tests: `tests/unit/`
 - Integration tests: `tests/integration/`
 - Use `conftest.py` files for shared fixtures at appropriate levels
+- **Test structure**: Create a test class for each function or class being tested
+- **Test methods**: Each method in the test class should test a different case
+- **Method naming**: Method names should clearly describe the case being tested (e.g., `test_increments_counter_and_returns_formatted_sku`)
 
 ## Running Tests
 
