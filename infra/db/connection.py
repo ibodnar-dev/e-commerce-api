@@ -1,7 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlmodel import Session, SQLModel
+from sqlmodel import Session
 
+from app.domain.models import SQLModel
 from app.settings import settings
 
 engine = create_engine(url=settings.database_url, echo=True)
