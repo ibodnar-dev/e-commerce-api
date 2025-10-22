@@ -9,4 +9,4 @@ from .product import (
     SQLModel,
     VariantAttributeValue,
 )
-from .system import Counter
+from .system import Counters
