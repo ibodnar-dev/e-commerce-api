@@ -6,7 +6,7 @@ from sqlmodel import Session
 
 from app.domain.ports.repositories import ProductRepository
 from app.domain.models import Product
-from infra.db import get_db_session
+from infra.db import get_db_session_generator
 
 
 class SQLProductRepository(ProductRepository):
@@ -23,5 +23,5 @@ class SQLProductRepository(ProductRepository):
         self.session.flush()
 
 
-def get_product_repository(session: Session = Depends(get_db_session)) -> ProductRepository:
+def get_product_repository(session: Session = Depends(get_db_session_generator)) -> ProductRepository:
     return SQLProductRepository(session)
