@@ -13,3 +13,12 @@ dependencies = [
 dev = [
     "pytest>=8.0.0",
 ]
+
+[tool.uv]
+package = true
+
+[tool.setuptools]
+packages = ["app", "infra"]
+
+[project.scripts]
+db-setup = "infra.db.cli:setup"
