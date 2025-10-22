@@ -5,10 +5,10 @@ from sqlmodel import Field, SQLModel
 
 
 class CounterName(Enum):
-    PRODUCT_SKU_NUMBER = "product_sku_number"
+    PRODUCT_SKU_COUNTER = "product_sku_counter"
 
 
-class Counters(SQLModel, table=True):
+class Counter(SQLModel, table=True):
     __tablename__ = "counters"
 
     name: CounterName = Field(primary_key=True, max_length=50)
