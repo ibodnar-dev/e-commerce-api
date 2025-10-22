@@ -21,4 +21,4 @@ package = true
 packages = ["app", "infra"]
 
 [project.scripts]
-db-setup = "infra.db.cli:setup"
+db-setup = "infra.db.cli:db_setup"
