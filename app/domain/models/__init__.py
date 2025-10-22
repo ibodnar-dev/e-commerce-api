@@ -1,4 +1,4 @@
-from app.domain.models.product import (
+from .product import (
     Attribute,
     AttributeValue,
     Inventory,
@@ -9,3 +9,4 @@ from app.domain.models.product import (
     SQLModel,
     VariantAttributeValue,
 )
+from .system import Counter
