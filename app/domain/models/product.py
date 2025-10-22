@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 from enum import Enum
+from typing import Optional
 from uuid import UUID, uuid4
 
 from sqlmodel import Field, Relationship, SQLModel
@@ -41,7 +42,7 @@ class Product(SQLModel, table=True):
 
     # Relationships
     variants: list["ProductVariant"] = Relationship(back_populates="product")
-    inventory: "Inventory | None" = Relationship(back_populates="product")
+    inventory: Optional["Inventory"] = Relationship(back_populates="product")
 
 
 class VariantAttributeValue(SQLModel, table=True):
@@ -80,7 +81,7 @@ class ProductVariant(SQLModel, table=True):
 
     # Relationships
     product: Product = Relationship(back_populates="variants")
-    inventory: "Inventory | None" = Relationship(back_populates="variant")
+    inventory: Optional["Inventory"] = Relationship(back_populates="variant")
     attribute_values: list["AttributeValue"] = Relationship(
         back_populates="variants",
         link_model=VariantAttributeValue
