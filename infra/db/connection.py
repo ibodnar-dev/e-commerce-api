@@ -1,7 +1,8 @@
-from typing import Any, Generator
+from collections.abc import Generator
+from typing import Any
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session, sessionmaker
 from sqlmodel import Session
 
 from app.domain.models import SQLModel
@@ -17,7 +18,7 @@ def create_tables():
     SQLModel.metadata.create_all(engine)
 
 
-def get_db_session_generator() -> Generator[Session | Any, Any, None]:
+def get_db_session_generator() -> Generator[Session | Any, Any]:
     """
     Creates a new database session for each request.
     Automatically closes after request completes.

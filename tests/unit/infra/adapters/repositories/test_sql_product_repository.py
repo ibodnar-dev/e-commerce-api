@@ -1,6 +1,6 @@
 from infra.adapters.repositories.sql_product_repository import (
-    get_product_repository,
     SQLProductRepository,
+    get_product_repository,
 )
 
 

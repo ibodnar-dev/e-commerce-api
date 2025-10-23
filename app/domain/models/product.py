@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from enum import Enum
 from typing import Optional
@@ -40,8 +40,8 @@ class Product(SQLModel, table=True):
     price: Decimal = Field(decimal_places=2, max_digits=10, nullable=False)
     sku: str | None = Field(default=None, max_length=100, unique=True, index=True)
     status: ProductStatus = Field(default=ProductStatus.DRAFT, nullable=False)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), nullable=False)
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), nullable=False)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC), nullable=False)
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC), nullable=False)
 
     # Relationships
     variants: list["ProductVariant"] = Relationship(back_populates="product")
@@ -76,7 +76,7 @@ class ProductVariant(SQLModel, table=True):
     name: str | None = Field(default=None, max_length=255)
     price: Decimal | None = Field(default=None, decimal_places=2, max_digits=10)
     is_active: bool = Field(default=True, nullable=False)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), nullable=False)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC), nullable=False)
 
     # Relationships
     product: Product = Relationship(back_populates="variants")
@@ -140,7 +140,7 @@ class Inventory(SQLModel, table=True):
     quantity_available: int = Field(default=0, nullable=False)
     quantity_reserved: int = Field(default=0, nullable=False)
     low_stock_threshold: int = Field(default=10, nullable=False)
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC), nullable=False)
 
     # Relationships
     product: Product | None = Relationship(back_populates="inventory")

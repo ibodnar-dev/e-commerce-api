@@ -1,10 +1,10 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
 from sqlmodel import Session
 
-from app.domain.ports.repositories import ProductRepository
 from app.domain.models import Product
+from app.domain.ports.repositories import ProductRepository
 
 
 class SQLProductRepository(ProductRepository):
@@ -16,7 +16,7 @@ class SQLProductRepository(ProductRepository):
         return self.session.get(Product, product_uuid)
 
     async def save(self, product: Product) -> None:
-        product.updated_at = datetime.now(timezone.utc)
+        product.updated_at = datetime.now(UTC)
         self.session.add(product)
         self.session.flush()
 

@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from sqlmodel import Session
 
-from app.domain.models import Product, ProductType, ProductStatus
+from app.domain.models import Product, ProductStatus, ProductType
 from app.domain.services.product.utils import generate_sku, generate_slug
 
 
