@@ -2,7 +2,7 @@ from collections.abc import Generator
 from typing import Any
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import sessionmaker
 from sqlmodel import Session
 
 from app.domain.models import SQLModel
