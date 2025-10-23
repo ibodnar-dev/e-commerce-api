@@ -1,12 +1,10 @@
-from fastapi.params import Depends
 from sqlmodel import Session, select
 
 from app.domain.models import Counter
 from app.domain.models.system import CounterName
-from infra.db import get_db_session_generator
 
 
-def generate_sku(session: Session = Depends(get_db_session_generator)) -> str:
+def generate_sku(session: Session) -> str:
     prefix = "SKU"
     statement = select(Counter).where(Counter.name == CounterName.PRODUCT_SKU_COUNTER).with_for_update()
     counter: Counter | None = session.exec(statement).first()
