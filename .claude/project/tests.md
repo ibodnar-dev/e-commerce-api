@@ -1,5 +1,9 @@
 # Testing Guidelines
 
+## Claude Instructions
+
+- **Do NOT run tests automatically**: When you finish writing tests, do not run them. The user will run tests themselves.
+
 ## Test Code Style
 
 - **No docstrings**: Do not add docstrings to test functions
