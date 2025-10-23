@@ -7,7 +7,9 @@ from app.domain.services.exceptions import CounterNotInitializedError
 
 def generate_sku(session: Session) -> str:
     prefix = "SKU"
-    statement = select(Counter).where(Counter.name == CounterName.PRODUCT_SKU_COUNTER).with_for_update()
+    statement = (
+        select(Counter).where(Counter.name == CounterName.PRODUCT_SKU_COUNTER).with_for_update()
+    )
     counter: Counter | None = session.exec(statement).first()
     if counter is None:
         raise CounterNotInitializedError("Product SKU counter is not initialized")

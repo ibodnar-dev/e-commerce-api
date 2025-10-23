@@ -9,7 +9,6 @@ from app.domain.services.product.utils import generate_sku, generate_slug
 
 
 class TestGenerateSku:
-
     def test_increments_counter_and_returns_formatted_sku(self, mock_session):
         counter = Counter(name=CounterName.PRODUCT_SKU_COUNTER, current_value=5)
 
@@ -57,7 +56,6 @@ class TestGenerateSku:
 
 
 class TestGenerateSlug:
-
     def test_converts_spaces_to_hyphens_and_lowercase(self):
         result = generate_slug("Product Name")
 

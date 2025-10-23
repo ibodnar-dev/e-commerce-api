@@ -9,12 +9,14 @@ from sqlmodel import Field, Relationship, SQLModel
 
 class ProductType(str, Enum):
     """Product type enumeration."""
+
     SIMPLE = "SIMPLE"
     VARIABLE = "VARIABLE"
 
 
 class ProductStatus(str, Enum):
     """Product status enumeration."""
+
     DRAFT = "DRAFT"
     ACTIVE = "ACTIVE"
     ARCHIVED = "ARCHIVED"
@@ -27,6 +29,7 @@ class Product(SQLModel, table=True):
     - SIMPLE products: Single SKU, no variants (e.g., a book)
     - VARIABLE products: Multiple variants with different options (e.g., t-shirt with sizes/colors)
     """
+
     __tablename__ = "products"
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -50,17 +53,12 @@ class VariantAttributeValue(SQLModel, table=True):
     Junction table linking variants to their attribute values.
     Example: A "Black T-Shirt in Medium" variant would have two entries linking to Black and Medium.
     """
+
     __tablename__ = "variant_attribute_values"
 
-    variant_id: UUID = Field(
-        foreign_key="product_variants.id",
-        primary_key=True,
-        nullable=False
-    )
+    variant_id: UUID = Field(foreign_key="product_variants.id", primary_key=True, nullable=False)
     attribute_value_id: UUID = Field(
-        foreign_key="attribute_values.id",
-        primary_key=True,
-        nullable=False
+        foreign_key="attribute_values.id", primary_key=True, nullable=False
     )
 
 
@@ -69,6 +67,7 @@ class ProductVariant(SQLModel, table=True):
     Child products that represent specific configurations.
     Only exists for VARIABLE products (e.g., "T-Shirt - Black - Medium").
     """
+
     __tablename__ = "product_variants"
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -83,8 +82,7 @@ class ProductVariant(SQLModel, table=True):
     product: Product = Relationship(back_populates="variants")
     inventory: Optional["Inventory"] = Relationship(back_populates="variant")
     attribute_values: list["AttributeValue"] = Relationship(
-        back_populates="variants",
-        link_model=VariantAttributeValue
+        back_populates="variants", link_model=VariantAttributeValue
     )
 
 
@@ -92,6 +90,7 @@ class Attribute(SQLModel, table=True):
     """
     Defines what options are available (e.g., "Color", "Size").
     """
+
     __tablename__ = "attributes"
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -106,6 +105,7 @@ class AttributeValue(SQLModel, table=True):
     """
     Defines the actual values for each attribute (e.g., "Red", "Small").
     """
+
     __tablename__ = "attribute_values"
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -116,8 +116,7 @@ class AttributeValue(SQLModel, table=True):
     # Relationships
     attribute: Attribute = Relationship(back_populates="values")
     variants: list[ProductVariant] = Relationship(
-        back_populates="attribute_values",
-        link_model=VariantAttributeValue
+        back_populates="attribute_values", link_model=VariantAttributeValue
     )
 
 
@@ -128,20 +127,15 @@ class Inventory(SQLModel, table=True):
     - For SIMPLE products: product_id is set, variant_id is NULL
     - For VARIABLE products: product_id is NULL, variant_id is set
     """
+
     __tablename__ = "inventory"
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     product_id: UUID | None = Field(
-        default=None,
-        foreign_key="products.id",
-        nullable=True,
-        index=True
+        default=None, foreign_key="products.id", nullable=True, index=True
     )
     variant_id: UUID | None = Field(
-        default=None,
-        foreign_key="product_variants.id",
-        nullable=True,
-        index=True
+        default=None, foreign_key="product_variants.id", nullable=True, index=True
     )
     quantity_available: int = Field(default=0, nullable=False)
     quantity_reserved: int = Field(default=0, nullable=False)
