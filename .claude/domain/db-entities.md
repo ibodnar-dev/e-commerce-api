@@ -222,7 +222,7 @@ INSERT INTO inventory (product_id, variant_id, quantity_available) VALUES
 
 ### Get Simple Product with Stock
 ```sql
-SELECT 
+SELECT
   p.*,
   i.quantity_available,
   i.quantity_reserved
@@ -237,7 +237,7 @@ WHERE p.id = ? AND p.type = 'SIMPLE';
 SELECT * FROM products WHERE id = ? AND type = 'VARIABLE';
 
 -- Get all variants with their attributes and stock
-SELECT 
+SELECT
   v.id,
   v.sku,
   v.name,
