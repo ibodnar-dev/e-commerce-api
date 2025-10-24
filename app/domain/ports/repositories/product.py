@@ -9,5 +9,5 @@ class ProductRepository(ABC):
         pass
 
     @abstractmethod
-    async def save(self, product: Product) -> None:
+    async def save(self, product: Product) -> Product:
         pass
