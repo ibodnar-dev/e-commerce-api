@@ -11,11 +11,11 @@ class SQLProductRepository(ProductRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    async def find_by_id(self, product_id: str) -> Product | None:
+    def find_by_id(self, product_id: str) -> Product | None:
         product_uuid = UUID(product_id)
         return self.session.get(Product, product_uuid)
 
-    async def save(self, product: Product) -> None:
+    def save(self, product: Product) -> None:
         product.updated_at = datetime.now(UTC)
         self.session.add(product)
         self.session.flush()
