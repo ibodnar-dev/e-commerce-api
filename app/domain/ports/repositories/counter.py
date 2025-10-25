@@ -9,6 +9,10 @@ class CounterRepository(ABC):
         pass
 
     @abstractmethod
+    def find_by_name_for_update(self, name: CounterName) -> Counter | None:
+        pass
+
+    @abstractmethod
     def save(self, counter: Counter) -> Counter:
         pass
 
