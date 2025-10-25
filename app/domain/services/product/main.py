@@ -1,13 +1,13 @@
 from decimal import Decimal
 
-from sqlmodel import Session
-
 from app.domain.models import Product, ProductStatus, ProductType
+from app.domain.ports.repositories import CounterRepository, ProductRepository
 from app.domain.services.product.utils import generate_sku, generate_slug
 
 
 def create_product(
-    session: Session,
+    product_repository: ProductRepository,
+    counter_repository: CounterRepository,
     product_type: ProductType,
     name: str,
     price: Decimal,
@@ -21,9 +21,7 @@ def create_product(
         price=price,
         slug=slug or generate_slug(name),
         description=description,
-        sku=generate_sku(session),
+        sku=generate_sku(counter_repository),
         status=status,
     )
-    session.add(product)
-    session.flush()
-    return product
+    return product_repository.save(product)
