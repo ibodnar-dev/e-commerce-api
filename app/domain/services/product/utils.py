@@ -1,21 +1,15 @@
-from sqlmodel import Session, select
-
-from app.domain.models import Counter
 from app.domain.models.system import CounterName
+from app.domain.ports.repositories import CounterRepository
 from app.domain.services.exceptions import CounterNotInitializedError
 
 
-def generate_sku(session: Session) -> str:
+def generate_sku(counter_repository: CounterRepository) -> str:
     prefix = "SKU"
-    statement = (
-        select(Counter).where(Counter.name == CounterName.PRODUCT_SKU_COUNTER).with_for_update()
-    )
-    counter: Counter | None = session.exec(statement).first()
+    counter = counter_repository.find_by_name_for_update(CounterName.PRODUCT_SKU_COUNTER)
     if counter is None:
         raise CounterNotInitializedError("Product SKU counter is not initialized")
-    counter.current_value = counter.current_value + 1 if counter else 1
-    session.add(counter)
-    session.flush()
+    counter.current_value = counter.current_value + 1
+    counter_repository.save(counter)
     return f"{prefix}-{counter.current_value:06d}"
 
 
