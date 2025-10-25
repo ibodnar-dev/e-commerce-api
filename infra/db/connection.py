@@ -21,7 +21,7 @@ def create_tables():
 def get_db_session_generator() -> Generator[Session | Any, Any]:
     """
     Creates a new database session for each request.
-    Automatically closes after request completes.
+    Automatically closes after the request completes.
     """
     session = SessionLocal()
     try:
