@@ -9,48 +9,36 @@ from app.domain.services.product.utils import generate_sku, generate_slug
 
 
 class TestGenerateSku:
-    def test_increments_counter_and_returns_formatted_sku(self, mock_session):
+    def test_increments_counter_and_returns_formatted_sku(self):
         counter = Counter(name=CounterName.PRODUCT_SKU_COUNTER, current_value=5)
+        mock_counter_repository = Mock()
+        mock_counter_repository.find_by_name_for_update.return_value = counter
 
-        mock_result = Mock()
-        mock_result.first.return_value = counter
-
-        mock_query = Mock()
-        mock_query.with_for_update.return_value = mock_query
-        mock_session.exec.return_value = mock_result
-
-        sku = generate_sku(session=mock_session)
+        sku = generate_sku(counter_repository=mock_counter_repository)
 
         assert sku == "SKU-000006"
         assert counter.current_value == 6
-        mock_session.add.assert_called_once_with(counter)
-        mock_session.flush.assert_called_once()
+        mock_counter_repository.find_by_name_for_update.assert_called_once_with(
+            CounterName.PRODUCT_SKU_COUNTER
+        )
+        mock_counter_repository.save.assert_called_once_with(counter)
 
-    def test_generates_sku_with_leading_zeros(self, mock_session):
+    def test_generates_sku_with_leading_zeros(self):
         counter = Counter(name=CounterName.PRODUCT_SKU_COUNTER, current_value=99)
+        mock_counter_repository = Mock()
+        mock_counter_repository.find_by_name_for_update.return_value = counter
 
-        mock_result = Mock()
-        mock_result.first.return_value = counter
-
-        mock_query = Mock()
-        mock_query.with_for_update.return_value = mock_query
-        mock_session.exec.return_value = mock_result
-
-        sku = generate_sku(session=mock_session)
+        sku = generate_sku(counter_repository=mock_counter_repository)
 
         assert sku == "SKU-000100"
         assert counter.current_value == 100
 
-    def test_raises_error_when_counter_not_initialized(self, mock_session):
-        mock_result = Mock()
-        mock_result.first.return_value = None
-
-        mock_query = Mock()
-        mock_query.with_for_update.return_value = mock_query
-        mock_session.exec.return_value = mock_result
+    def test_raises_error_when_counter_not_initialized(self):
+        mock_counter_repository = Mock()
+        mock_counter_repository.find_by_name_for_update.return_value = None
 
         with pytest.raises(CounterNotInitializedError) as exc_info:
-            generate_sku(session=mock_session)
+            generate_sku(counter_repository=mock_counter_repository)
 
         assert str(exc_info.value) == "Product SKU counter is not initialized"
 
