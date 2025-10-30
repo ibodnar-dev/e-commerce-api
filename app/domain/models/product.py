@@ -4,6 +4,7 @@ from enum import Enum
 from typing import Optional
 from uuid import UUID, uuid4
 
+from pydantic import ConfigDict
 from sqlmodel import Field, Relationship, SQLModel
 
 
@@ -31,6 +32,7 @@ class Product(SQLModel, table=True):
     """
 
     __tablename__ = "products"
+    model_config = ConfigDict(extra="forbid")
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     type: ProductType = Field(nullable=False)
