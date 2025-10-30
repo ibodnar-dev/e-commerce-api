@@ -56,5 +56,5 @@ def create_product_endpoint(
     except DatabaseException as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create product",
+            detail=str(e),
         ) from e
