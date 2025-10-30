@@ -5,7 +5,7 @@ from sqlmodel import Field, SQLModel
 
 
 class CounterName(Enum):
-    PRODUCT_SKU_COUNTER = "product_sku_counter"
+    product_sku_counter = "product_sku_counter"
 
 
 class Counter(SQLModel, table=True):

@@ -10,7 +10,7 @@ from app.domain.services.product.utils import generate_sku, generate_slug
 
 class TestGenerateSku:
     def test_increments_counter_and_returns_formatted_sku(self):
-        counter = Counter(name=CounterName.PRODUCT_SKU_COUNTER, current_value=5)
+        counter = Counter(name=CounterName.product_sku_counter, current_value=5)
         mock_counter_repository = Mock()
         mock_counter_repository.find_by_name_for_update.return_value = counter
 
@@ -19,12 +19,12 @@ class TestGenerateSku:
         assert sku == "SKU-000006"
         assert counter.current_value == 6
         mock_counter_repository.find_by_name_for_update.assert_called_once_with(
-            CounterName.PRODUCT_SKU_COUNTER
+            CounterName.product_sku_counter
         )
         mock_counter_repository.save.assert_called_once_with(counter)
 
     def test_generates_sku_with_leading_zeros(self):
-        counter = Counter(name=CounterName.PRODUCT_SKU_COUNTER, current_value=99)
+        counter = Counter(name=CounterName.product_sku_counter, current_value=99)
         mock_counter_repository = Mock()
         mock_counter_repository.find_by_name_for_update.return_value = counter
 

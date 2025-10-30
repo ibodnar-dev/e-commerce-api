@@ -5,7 +5,7 @@ from app.domain.services.exceptions import CounterNotInitializedError
 
 def generate_sku(counter_repository: CounterRepository) -> str:
     prefix = "SKU"
-    counter = counter_repository.find_by_name_for_update(CounterName.PRODUCT_SKU_COUNTER)
+    counter = counter_repository.find_by_name_for_update(CounterName.product_sku_counter)
     if counter is None:
         raise CounterNotInitializedError("Product SKU counter is not initialized")
     counter.current_value = counter.current_value + 1
