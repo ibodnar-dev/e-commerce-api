@@ -16,7 +16,7 @@ def create_product(
     status: ProductStatus = ProductStatus.ACTIVE,
 ) -> Product:
     product = Product(
-        product_type=product_type,
+        type=product_type.value,
         name=name,
         price=price,
         slug=slug or generate_slug(name),
