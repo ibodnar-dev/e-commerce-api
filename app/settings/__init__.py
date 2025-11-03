@@ -1,10 +1,19 @@
 import os
 
-env = os.getenv("APP_ENV", "development")
+from app.settings.base import Settings
+from app.settings.environments import ENVIRONMENT_OVERRIDES, Environment
 
-if env == "e2e":
-    from .e2e import e2e_settings as settings
-else:
-    from .development import dev_settings as settings
 
-__all__ = ["settings"]
+def get_settings() -> Settings:
+    """Get settings with environment-specific overrides."""
+    env = os.getenv("APP_ENV", Environment.development.value)
+    env_overrides = ENVIRONMENT_OVERRIDES.get(
+        env, ENVIRONMENT_OVERRIDES[Environment.development.value]
+    )
+    return Settings(**env_overrides)
+
+
+# For backwards compatibility
+settings = get_settings()
+
+__all__ = ["settings", "get_settings"]
