@@ -1,6 +1,7 @@
 """Environment-specific configuration overrides."""
 
 from enum import Enum
+from pathlib import Path
 from typing import TypedDict
 
 
@@ -9,7 +10,7 @@ class EnvironmentConfig(TypedDict, total=False):
 
     log_level: str
     db_name: str
-    db_relative_path: str
+    db_relative_path: Path
     db_connection_string: str
 
 
@@ -25,17 +26,17 @@ ENVIRONMENT_OVERRIDES: dict[str, EnvironmentConfig] = {
     Environment.development.value: {
         "log_level": "DEBUG",
         "db_name": "app",
-        "db_relative_path": "infra/db",
+        "db_relative_path": Path("infra/db"),
     },
     Environment.integration.value: {
         "log_level": "DEBUG",
         "db_name": "integration",
-        "db_relative_path": "tests/integration/data/db",
+        "db_relative_path": Path("tests/integration/data/db"),
     },
     Environment.e2e.value: {
         "log_level": "DEBUG",
         "db_name": "e2e",
-        "db_relative_path": "tests/e2e/data/db",
+        "db_relative_path": Path("tests/e2e/data/db"),
     },
     Environment.qa.value: {
         "log_level": "INFO",
