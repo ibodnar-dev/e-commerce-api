@@ -12,6 +12,7 @@ from infra.db import default_engine
 
 @pytest.fixture(scope="session")
 def setup_db():
+    settings.db_absolute_path.mkdir(parents=True, exist_ok=True)
     SQLModel.metadata.create_all(default_engine)
     yield
     if os.environ.get("APP_ENV") == Environment.e2e.value:
