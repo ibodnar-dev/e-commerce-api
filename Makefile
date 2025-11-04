@@ -13,11 +13,11 @@ test-unit:
 
 test-integration:
 	@echo "Running integration tests with APP_ENV=integration..."
-	APP_ENV=integration pytest tests/integration -v
+	source .venv/bin/activate && APP_ENV=integration pytest tests/integration -v
 
 test-e2e:
 	@echo "Running e2e tests with APP_ENV=e2e..."
-	APP_ENV=e2e pytest tests/e2e -v
+	source .venv/bin/activate && APP_ENV=e2e pytest tests/e2e -v
 
 test-all:
 	@echo "Running all test suites..."
