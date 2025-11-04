@@ -16,4 +16,4 @@ def get_settings() -> Settings:
 # For backwards compatibility
 settings = get_settings()
 
-__all__ = ["settings", "get_settings"]
+__all__ = ["settings", "get_settings", "Environment"]
