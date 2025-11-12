@@ -97,7 +97,7 @@ pytest
 pytest tests/unit/test_product_repository.py
 
 # With coverage
-pytest --cov=app --cov=infra
+pytest --cov=app --cov=external
 ```
 
 ## Project Structure
