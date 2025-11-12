@@ -83,7 +83,7 @@ class ProductRepository(ABC):
     async def save(self, product: Product) -> None:
         pass
 
-# infra/adapters/repositories/sql_product_repository.py
+# external/adapters/repositories/sql_product_repository.py
 from domain.ports.repositories.product_repository import ProductRepository
 from domain.models.product import Product
 
