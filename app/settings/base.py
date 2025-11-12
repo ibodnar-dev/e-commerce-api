@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic import Field
+from pydantic import Field, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -13,26 +13,23 @@ class Settings(BaseSettings):
         extra="ignore",
     )
     environment: str = Field(default="development")
-    project_root: Path = Field(default_factory=lambda: Path(__file__).resolve().parents[2])
-    db_connection_string: str | None = None
-    db_name: str = "app"
-    db_relative_path: Path | None = None
     log_level: str = "INFO"
+    project_root: Path = Field(default_factory=lambda: Path(__file__).resolve().parents[2])
+    db_user: str
+    db_password: str
+    db_host: str
+    db_port: int
+    db_name: str
 
     @property
-    def db_absolute_path(self) -> Path | None:
-        return self.db_relative_path.resolve() if self.db_relative_path else None
-
-    @property
-    def database_path(self) -> Path | None:
-        return self.db_absolute_path / f"{self.db_name}.sqlite3" if self.db_absolute_path else None
-
-    @property
-    def database_url(self) -> str | None:
-        """Get the database connection URL.
-        If db_connection_string is set (e.g., for PostgreSQL), uses that directly.
-        Otherwise, constructs an SQLite URL
-        """
-        if self.db_connection_string:
-            return self.db_connection_string
-        return f"sqlite:///{self.database_path}"
+    def db_url(self) -> str:
+        return str(
+            PostgresDsn.build(
+                scheme="postgresql",
+                host=self.db_host,
+                port=self.db_port,
+                username=self.db_user,
+                password=self.db_password,
+                path=self.db_name,
+            )
+        )

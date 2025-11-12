@@ -1,17 +1,14 @@
-"""Environment-specific configuration overrides."""
-
 from enum import Enum
-from pathlib import Path
 from typing import TypedDict
 
 
 class EnvironmentConfig(TypedDict, total=False):
-    """Type hints for environment configuration."""
-
     log_level: str
+    db_user: str
+    db_password: str
+    db_host: str
+    db_port: int
     db_name: str
-    db_relative_path: Path
-    db_connection_string: str
 
 
 class Environment(Enum):
@@ -25,29 +22,34 @@ class Environment(Enum):
 ENVIRONMENT_OVERRIDES: dict[str, EnvironmentConfig] = {
     Environment.development.value: {
         "log_level": "DEBUG",
-        "db_name": "app",
-        "db_relative_path": Path("infra/db"),
+        "db_user": "app",
+        "db_password": "app",
+        "db_host": "localhost",
+        "db_port": 5432,
+        "db_name": "app-dev",
     },
     Environment.integration.value: {
         "log_level": "DEBUG",
-        "db_name": "integration",
-        "db_relative_path": Path("tests/integration/data/db"),
+        "db_user": "app",
+        "db_password": "app",
+        "db_host": "localhost",
+        "db_port": 5433,
+        "db_name": "app-test",
     },
     Environment.e2e.value: {
         "log_level": "DEBUG",
-        "db_name": "e2e",
-        "db_relative_path": Path("tests/e2e/data/db"),
+        "db_user": "app",
+        "db_password": "app",
+        "db_host": "localhost",
+        "db_port": 5433,
+        "db_name": "app-test",
     },
     Environment.qa.value: {
         "log_level": "INFO",
-        # PostgreSQL example - set via environment variable APP_DB_CONNECTION_STRING
-        # or uncomment and configure here:
-        # "db_connection_string": "postgresql://user:password@host:5432/ecommerce_qa",
+        # Set via environment variable APP_DB_CONNECTION_STRING
+        # Example: postgresql://user:password@host:5432/ecommerce_qa
     },
     Environment.production.value: {
         "log_level": "WARNING",
-        # PostgreSQL example - set via environment variable APP_DB_CONNECTION_STRING
-        # or uncomment and configure here:
-        # "db_connection_string": "postgresql://user:password@host:5432/ecommerce",
     },
 }
