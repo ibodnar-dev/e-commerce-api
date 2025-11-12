@@ -7,15 +7,23 @@ help:
 	@echo "  make test-e2e          - Run e2e tests (APP_ENV=e2e)"
 	@echo "  make test-all          - Run all tests in sequence"
 
+dc-up-db-dev:
+	@echo "Starting postgres-dev"
+	docker-compose -f infra/docker/local/docker-compose.yaml up postgres-dev -d
+
+dc-up-db-test:
+	@echo "Starting postgres-dev"
+	docker-compose -f infra/docker/local/docker-compose.yaml up postgres-test -d --wait
+
 test-unit:
 	@echo "Running unit tests..."
-	pytest tests/unit -v
+	source .venv/bin/activate && pytest tests/unit -vs
 
-test-integration:
+test-integration: dc-up-db-test
 	@echo "Running integration tests with APP_ENV=integration..."
-	source .venv/bin/activate && APP_ENV=integration pytest tests/integration -v
+	source .venv/bin/activate && export APP_ENV=integration && db-setup && pytest tests/integration -v
 
-test-e2e:
+test-e2e: dc-up-db-test
 	@echo "Running e2e tests with APP_ENV=e2e..."
 	source .venv/bin/activate && APP_ENV=e2e pytest tests/e2e -v
 
