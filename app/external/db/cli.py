@@ -1,4 +1,4 @@
-from infra.db.connection import create_tables
+from app.external.db.connection import create_tables
 
 
 def db_setup():

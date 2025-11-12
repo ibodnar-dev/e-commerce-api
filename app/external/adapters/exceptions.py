@@ -1,4 +1,4 @@
-from infra.exceptions import InfraException
+from app.external.exceptions import InfraException
 
 
 class AdapterException(InfraException):

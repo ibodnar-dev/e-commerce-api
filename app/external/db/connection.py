@@ -7,7 +7,15 @@ from sqlmodel import Session
 from app.domain.models import SQLModel
 from app.settings import settings
 
-default_engine = create_engine(url=settings.database_url, echo=True)
+default_engine = create_engine(
+    url=settings.db_url,
+    echo=True,
+    connect_args={"connect_timeout": 10},
+    pool_size=5,
+    max_overflow=10,
+    pool_pre_ping=True,  # Verify connections before using
+    pool_recycle=3600,  # Recycle connections after 1 hour
+)
 DefaultSession = sessionmaker(
     autocommit=False, autoflush=False, bind=default_engine, class_=Session
 )

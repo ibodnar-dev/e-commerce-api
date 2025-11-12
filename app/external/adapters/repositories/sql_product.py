@@ -6,8 +6,8 @@ from sqlmodel import Session
 
 from app.domain.models import Product
 from app.domain.ports.repositories import ProductRepository
-from infra.adapters.logging import get_logger
-from infra.adapters.repositories.exceptions import DatabaseException
+from app.external.adapters.logging import get_logger
+from app.external.adapters.repositories.exceptions import DatabaseException
 
 logger = get_logger(__name__)
 

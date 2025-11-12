@@ -3,8 +3,8 @@ from sqlmodel import Session, select
 
 from app.domain.models.system import Counter, CounterName
 from app.domain.ports.repositories import CounterRepository
-from infra.adapters.logging import get_logger
-from infra.adapters.repositories.exceptions import DatabaseException
+from app.external.adapters.logging import get_logger
+from app.external.adapters.repositories.exceptions import DatabaseException
 
 logger = get_logger(__name__)
 
