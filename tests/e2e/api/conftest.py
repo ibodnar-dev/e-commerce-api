@@ -2,7 +2,7 @@ import pytest
 
 from app.domain.models import Counter
 from app.domain.models.system import CounterName
-from infra.db.connection import DefaultSession
+from app.external.db import DefaultSession
 
 
 @pytest.fixture(scope="session")

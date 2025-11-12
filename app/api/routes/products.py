@@ -10,7 +10,7 @@ from app.api.schemas import ProductCreateRequest, ProductResponse
 from app.domain.ports.repositories import CounterRepository, ProductRepository
 from app.domain.services.exceptions import CounterNotInitializedError
 from app.domain.services.product.main import create_product
-from infra.adapters.repositories.exceptions import DatabaseException
+from app.external.adapters.repositories.exceptions import DatabaseException
 
 router = APIRouter(prefix="/products", tags=["products"])
 
