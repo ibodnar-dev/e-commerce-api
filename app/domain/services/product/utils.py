@@ -1,16 +1,19 @@
-from app.domain.models.system import CounterName
 from app.domain.ports.repositories import CounterRepository
-from app.domain.services.exceptions import CounterNotInitializedError
 
 
 def generate_sku(counter_repository: CounterRepository) -> str:
+    """
+    Generate a unique SKU using PostgreSQL sequence.
+
+    Args:
+        counter_repository: Repository for generating sequential values
+
+    Returns:
+        str: A unique SKU in format "SKU-XXXXXX" (e.g., "SKU-000001")
+    """
     prefix = "SKU"
-    counter = counter_repository.find_by_name_for_update(CounterName.product_sku_counter)
-    if counter is None:
-        raise CounterNotInitializedError("Product SKU counter is not initialized")
-    counter.current_value = counter.current_value + 1
-    counter_repository.save(counter)
-    return f"{prefix}-{counter.current_value:06d}"
+    next_value = counter_repository.get_next_sku_value()
+    return f"{prefix}-{next_value:06d}"
 
 
 def generate_slug(name: str) -> str:

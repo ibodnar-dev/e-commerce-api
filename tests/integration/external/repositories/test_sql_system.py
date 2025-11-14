@@ -1,87 +1,84 @@
-from app.domain.models.system import Counter, CounterName
+from sqlalchemy.orm import sessionmaker
+from sqlmodel import Session
+
 from app.external.adapters.repositories import SQLCounterRepository
+from app.external.db import default_engine
 
 
-class TestLifecycle:
-    def test_create(self, counter_repository: SQLCounterRepository):
-        counter = Counter(name=CounterName.product_sku_counter, current_value=0)
-        saved_counter = counter_repository.save(counter)
-        counter_repository.session.commit()
+class TestSequenceBasedSKUGeneration:
+    """Test PostgreSQL sequence-based SKU value generation."""
 
-        assert saved_counter.name == CounterName.product_sku_counter
-        assert saved_counter.current_value == 0
+    def test_get_next_sku_value_returns_sequential_values(
+        self, counter_repository: SQLCounterRepository
+    ):
+        """Test that get_next_sku_value returns incrementing values."""
+        value1 = counter_repository.get_next_sku_value()
+        value2 = counter_repository.get_next_sku_value()
+        value3 = counter_repository.get_next_sku_value()
 
-    def test_read(self, counter_repository: SQLCounterRepository):
-        counter = counter_repository.find_by_name(CounterName.product_sku_counter)
+        assert value2 == value1 + 1
+        assert value3 == value2 + 1
 
-        assert counter is not None
-        assert counter.name == CounterName.product_sku_counter
-        assert counter.current_value == 0
+    def test_get_next_sku_value_is_unique_across_sessions(
+        self, counter_repository: SQLCounterRepository
+    ):
+        """Test that multiple sessions get unique sequential values without conflicts."""
+        # First session gets a value
+        value1 = counter_repository.get_next_sku_value()
 
-    def test_delete(self, counter_repository: SQLCounterRepository):
-        counter = counter_repository.find_by_name(CounterName.product_sku_counter)
+        # Second session with different repository
+        second_session = sessionmaker(autoflush=False, bind=default_engine, class_=Session)()
+        second_repository = SQLCounterRepository(second_session)
+        value2 = second_repository.get_next_sku_value()
 
-        counter_repository.delete(counter)
-        counter_repository.session.commit()
+        # Third session
+        third_session = sessionmaker(autoflush=False, bind=default_engine, class_=Session)()
+        third_repository = SQLCounterRepository(third_session)
+        value3 = third_repository.get_next_sku_value()
 
-        deleted_counter = counter_repository.find_by_name(CounterName.product_sku_counter)
+        # All values should be unique and sequential
+        assert value2 == value1 + 1
+        assert value3 == value2 + 1
 
-        assert deleted_counter is None
+        # Cleanup
+        second_session.close()
+        third_session.close()
 
+    def test_concurrent_sku_generation_no_duplicates(self):
+        """Test that concurrent SKU generation produces no duplicates."""
+        # Simulate concurrent access with multiple repositories
+        sessions = []
+        repositories = []
+        for _ in range(5):
+            session = sessionmaker(autoflush=False, bind=default_engine, class_=Session)()
+            sessions.append(session)
+            repositories.append(SQLCounterRepository(session))
 
-class TestUpdateCases:
-    UPDATE_VALUE = 100
+        # Generate values concurrently (within same transaction context)
+        values = [repo.get_next_sku_value() for repo in repositories]
 
-    def test_update_counter_value(self, counter_repository: SQLCounterRepository):
-        counter = Counter(name=CounterName.product_sku_counter, current_value=0)
-        counter_repository.save(counter)
-        counter_repository.session.commit()
+        # All values should be unique
+        assert len(values) == len(set(values)), "Found duplicate SKU values!"
 
-        found_counter = counter_repository.find_by_name(CounterName.product_sku_counter)
-        found_counter.current_value = self.UPDATE_VALUE
-        updated_counter = counter_repository.save(found_counter)
-        counter_repository.session.commit()
+        # Values should be sequential
+        sorted_values = sorted(values)
+        for i in range(len(sorted_values) - 1):
+            assert sorted_values[i + 1] == sorted_values[i] + 1
 
-        assert updated_counter.current_value == self.UPDATE_VALUE
+        # Cleanup
+        for session in sessions:
+            session.close()
 
-        refetched_counter = counter_repository.find_by_name(CounterName.product_sku_counter)
+    def test_get_next_sku_value_works_after_rollback(
+        self, counter_repository: SQLCounterRepository
+    ):
+        """Test that sequence continues after transaction rollback (creates gaps)."""
+        value1 = counter_repository.get_next_sku_value()
+        counter_repository.session.rollback()
 
-        assert refetched_counter.current_value == self.UPDATE_VALUE
+        # After rollback, sequence should still increment (creating a gap)
+        value2 = counter_repository.get_next_sku_value()
 
-    def test_find_by_name_for_update(self, counter_repository: SQLCounterRepository):
-        locked_counter = counter_repository.find_by_name_for_update(CounterName.product_sku_counter)
-
-        assert locked_counter is not None
-        assert locked_counter.name == CounterName.product_sku_counter
-        assert locked_counter.current_value == self.UPDATE_VALUE
-
-        locked_counter.current_value += 1
-        counter_repository.save(locked_counter)
-        counter_repository.session.commit()
-
-        updated_counter = counter_repository.find_by_name(CounterName.product_sku_counter)
-
-        assert updated_counter is not None
-        assert updated_counter.current_value == self.UPDATE_VALUE + 1
-
-    def test_multiple_updates(self, counter_repository: SQLCounterRepository):
-        initial_counter_value = counter_repository.find_by_name(
-            CounterName.product_sku_counter
-        ).current_value
-        for n in range(1, 5):
-            locked_counter = counter_repository.find_by_name_for_update(
-                CounterName.product_sku_counter
-            )
-            locked_counter.current_value += 1
-            updated_counter = counter_repository.save(locked_counter)
-            counter_repository.session.commit()
-            assert updated_counter.current_value == initial_counter_value + n
-
-    # def test_update_locked_counter_fails(self, counter_repository: SQLCounterRepository):
-    #     counter = counter_repository.find_by_name_for_update(CounterName.product_sku_counter)
-    #     second_engine = create_engine(url=str(counter_repository.session.bind.url))
-    #     second_session = sessionmaker(
-    #         autocommit=False, autoflush=False, bind=second_engine, class_=Session
-    #     )
-    #     second_repository = SQLCounterRepository(second_session())
-    #     second_counter = second_repository.find_by_name_for_update(CounterName.product_sku_counter)
+        # value2 might not be value1 + 1 due to the rollback gap
+        # but it should still be a valid value
+        assert value2 > value1

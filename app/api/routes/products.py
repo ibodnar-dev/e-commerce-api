@@ -8,7 +8,6 @@ from app.api.dependencies import (
 )
 from app.api.schemas import ProductCreateRequest, ProductResponse
 from app.domain.ports.repositories import CounterRepository, ProductRepository
-from app.domain.services.exceptions import CounterNotInitializedError
 from app.domain.services.product.main import create_product
 from app.external.adapters.repositories.exceptions import DatabaseException
 
@@ -48,11 +47,6 @@ def create_product_endpoint(
             status=request.status,
         )
         return ProductResponse.model_validate(product)
-    except CounterNotInitializedError as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e),
-        ) from e
     except DatabaseException as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

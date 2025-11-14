@@ -4,6 +4,7 @@ import pytest
 
 from app.domain.models import SQLModel
 from app.external.db import default_engine
+from app.external.db.sequences import product_sku_sequence
 from app.settings import Environment
 
 
@@ -15,3 +16,4 @@ def setup_db():
     # Clean up: drop all tables after tests
     if os.environ.get("APP_ENV") == Environment.integration.value:
         SQLModel.metadata.drop_all(default_engine)
+        product_sku_sequence.drop(default_engine, checkfirst=True)

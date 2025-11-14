@@ -1,7 +1,7 @@
 from app.domain.models import ProductType
 
 
-def test_create_product(create_product_counter, test_client):  # noqa: ARG001
+def test_create_product(test_client):
     response = test_client.post(
         "/api/v1/products",
         json={"product_type": ProductType.SIMPLE.value, "name": "Test", "price": 10.0},

@@ -1,10 +1,10 @@
 from sqlalchemy.exc import SQLAlchemyError
-from sqlmodel import Session, select
+from sqlmodel import Session
 
-from app.domain.models.system import Counter, CounterName
 from app.domain.ports.repositories import CounterRepository
 from app.external.adapters.logging import get_logger
 from app.external.adapters.repositories.exceptions import DatabaseException
+from app.external.db.sequences import product_sku_sequence
 
 logger = get_logger(__name__)
 
@@ -13,57 +13,22 @@ class SQLCounterRepository(CounterRepository):
     def __init__(self, session: Session):
         self.session = session
 
-    def find_by_name(self, name: CounterName) -> Counter | None:
-        try:
-            return self.session.get(Counter, name)
-        except SQLAlchemyError as e:
-            logger.exception(
-                f"Failed to find counter with name '{name.value}'",
-                extra={"counter_name": name.value},
-            )
-            raise DatabaseException(f"Failed to find counter with name '{name.value}'") from e
+    def get_next_sku_value(self) -> int:
+        """
+        Get next SKU value from PostgreSQL sequence.
+        This operation is atomic and requires no locking.
 
-    def find_by_name_for_update(self, name: CounterName) -> Counter | None:
-        try:
-            statement = select(Counter).where(Counter.name == name).with_for_update()
-            return self.session.exec(statement).first()
-        except SQLAlchemyError as e:
-            logger.exception(
-                f"Failed to find counter with name '{name.value}' for update",
-                extra={"counter_name": name.value},
-            )
-            raise DatabaseException(
-                f"Failed to find counter with name '{name.value}' for update"
-            ) from e
+        Returns:
+            int: The next sequential value for SKU generation
 
-    def save(self, counter: Counter) -> Counter:
+        Raises:
+            DatabaseException: If the sequence operation fails
+        """
         try:
-            self.session.add(counter)
-            self.session.flush()
-            logger.debug("Counter saved successfully", extra={"counter_name": counter.name.value})
-            return counter
+            return self.session.exec(product_sku_sequence)
         except SQLAlchemyError as e:
-            logger.exception(
-                "Failed to save counter",
-                extra={"counter_name": counter.name.value},
-            )
-            raise DatabaseException(
-                f"Failed to save counter with name '{counter.name.value}'"
-            ) from e
-
-    def delete(self, counter: Counter) -> None:
-        try:
-            self.session.delete(counter)
-            self.session.flush()
-            logger.debug("Counter deleted successfully", extra={"counter_name": counter.name.value})
-        except SQLAlchemyError as e:
-            logger.exception(
-                "Failed to delete counter",
-                extra={"counter_name": counter.name.value},
-            )
-            raise DatabaseException(
-                f"Failed to delete counter with name '{counter.name.value}'"
-            ) from e
+            logger.exception("Failed to get next SKU value from sequence")
+            raise DatabaseException("Failed to generate SKU value") from e
 
 
 def get_counter_repository(session: Session) -> CounterRepository:

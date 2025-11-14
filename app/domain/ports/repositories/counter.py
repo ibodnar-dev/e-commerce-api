@@ -1,21 +1,18 @@
 from abc import ABC, abstractmethod
 
-from app.domain.models.system import Counter, CounterName
-
 
 class CounterRepository(ABC):
-    @abstractmethod
-    def find_by_name(self, name: CounterName) -> Counter | None:
-        pass
+    """
+    Repository for generating sequential counter values.
+    """
 
     @abstractmethod
-    def find_by_name_for_update(self, name: CounterName) -> Counter | None:
-        pass
+    def get_next_sku_value(self) -> int:
+        """
+        Get the next sequential value for SKU generation.
+        This operation is atomic and thread-safe.
 
-    @abstractmethod
-    def save(self, counter: Counter) -> Counter:
-        pass
-
-    @abstractmethod
-    def delete(self, counter: Counter) -> None:
+        Returns:
+            int: The next sequential value
+        """
         pass

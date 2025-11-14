@@ -5,12 +5,13 @@ from sqlalchemy.orm import sessionmaker
 from sqlmodel import Session
 
 from app.domain.models import SQLModel
+from app.external.db.sequences import product_sku_sequence
 from app.settings import settings
 
 default_engine = create_engine(
     url=settings.db_url,
     echo=True,
-    connect_args={"connect_timeout": 10},
+    connect_args={"connect_timeout": 3},
     pool_size=5,
     max_overflow=10,
     pool_pre_ping=True,  # Verify connections before using
@@ -22,7 +23,14 @@ DefaultSession = sessionmaker(
 
 
 def create_tables():
+    # Create all tables
     SQLModel.metadata.create_all(default_engine)
+    product_sku_sequence.create(default_engine, checkfirst=True)
+
+
+def drop_tables():
+    SQLModel.metadata.drop_all(default_engine)
+    product_sku_sequence.drop(default_engine, checkfirst=True)
 
 
 def get_managed_db_session() -> Generator[Session]:

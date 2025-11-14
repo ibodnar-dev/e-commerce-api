@@ -1,46 +1,33 @@
 from unittest.mock import Mock
 
-import pytest
-
-from app.domain.models import Counter
-from app.domain.models.system import CounterName
-from app.domain.services.exceptions import CounterNotInitializedError
 from app.domain.services.product.utils import generate_sku, generate_slug
 
 
 class TestGenerateSku:
-    def test_increments_counter_and_returns_formatted_sku(self):
-        counter = Counter(name=CounterName.product_sku_counter, current_value=5)
+    def test_returns_formatted_sku_with_sequence_value(self):
         mock_counter_repository = Mock()
-        mock_counter_repository.find_by_name_for_update.return_value = counter
+        mock_counter_repository.get_next_sku_value.return_value = 1
 
         sku = generate_sku(counter_repository=mock_counter_repository)
 
-        assert sku == "SKU-000006"
-        assert counter.current_value == 6
-        mock_counter_repository.find_by_name_for_update.assert_called_once_with(
-            CounterName.product_sku_counter
-        )
-        mock_counter_repository.save.assert_called_once_with(counter)
+        assert sku == "SKU-000001"
+        mock_counter_repository.get_next_sku_value.assert_called_once()
 
     def test_generates_sku_with_leading_zeros(self):
-        counter = Counter(name=CounterName.product_sku_counter, current_value=99)
         mock_counter_repository = Mock()
-        mock_counter_repository.find_by_name_for_update.return_value = counter
+        mock_counter_repository.get_next_sku_value.return_value = 100
 
         sku = generate_sku(counter_repository=mock_counter_repository)
 
         assert sku == "SKU-000100"
-        assert counter.current_value == 100
 
-    def test_raises_error_when_counter_not_initialized(self):
+    def test_generates_sku_with_large_numbers(self):
         mock_counter_repository = Mock()
-        mock_counter_repository.find_by_name_for_update.return_value = None
+        mock_counter_repository.get_next_sku_value.return_value = 999999
 
-        with pytest.raises(CounterNotInitializedError) as exc_info:
-            generate_sku(counter_repository=mock_counter_repository)
+        sku = generate_sku(counter_repository=mock_counter_repository)
 
-        assert str(exc_info.value) == "Product SKU counter is not initialized"
+        assert sku == "SKU-999999"
 
 
 class TestGenerateSlug:
