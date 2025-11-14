@@ -25,6 +25,7 @@ packages = ["app"]
 
 [project.scripts]
 db-setup = "app.external.db.cli:db_setup"
+db-drop = "app.external.db.cli:db_drop"
 
 [tool.ruff]
 line-length = 100
