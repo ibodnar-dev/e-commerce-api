@@ -25,7 +25,7 @@ test-integration: dc-up-db-test
 
 test-e2e: dc-up-db-test
 	@echo "Running e2e tests with APP_ENV=e2e..."
-	source .venv/bin/activate && APP_ENV=e2e pytest tests/e2e -v
+	source .venv/bin/activate && export APP_ENV=integration && db-setup && pytest tests/e2e -v
 
 test-all:
 	@echo "Running all test suites..."
