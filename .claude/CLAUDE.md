@@ -23,3 +23,10 @@ When working on features, always reference the relevant domain documentation:
 - Follow the database schema defined in `db-entities.md` when creating entities and repositories
 - Maintain separation between simple products (single SKU) and variable products (multiple variants)
 - Always validate business rules as documented in the domain files
+
+## Tool Usage
+- Proactively use the GitHub grep MCP tool (`mcp__grep__searchGitHub`) to find real-world code examples when:
+  - Implementing unfamiliar APIs or libraries
+  - Looking for best practices and common patterns
+  - Needing to see how other developers solve similar problems
+  - Validating implementation approaches
